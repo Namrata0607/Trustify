@@ -1,13 +1,19 @@
 import { Router } from "express";
-// import { getAllStores, searchStores } from "../controllers/userController.js";
+import { getAllStores, searchStores, submitRating, getMyRatings } from "../controllers/userController.js";
 import { authMiddleware, isUser } from "../middleware/authMiddleware.js";
 
-const router = Router;
+const router = Router();
 
-// View all stores with ratings
-// router.get("/stores", authMiddleware, isUser, getAllStores);
+// View all stores
+router.get("/stores", authMiddleware, isUser, getAllStores);
 
-// Search stores by name or address
-// router.get("/stores/search", authMiddleware, isUser, searchStores);
+// Search stores
+router.get("/stores/search", authMiddleware, isUser, searchStores);
+
+// Submit or update rating
+router.post("/stores/rate", authMiddleware, isUser, submitRating);
+
+// Get current user's ratings history
+router.get("/my-ratings", authMiddleware, isUser, getMyRatings);
 
 export default router;

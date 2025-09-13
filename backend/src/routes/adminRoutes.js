@@ -1,22 +1,36 @@
 import { Router } from "express";
-import { createUser, createStore, getDashboardStats, getStoresList, getUsersList } from "../controllers/adminController.js";
+import {
+  createUser,
+  createStore,
+  promoteUserToStoreOwner,
+  getDashboardStats,
+  getStoresList,
+  getUsersList,
+} from "../controllers/adminController.js";
+
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-// Create a new user (normal/store owner)
-router.post("/users", authMiddleware, isAdmin, createUser);
+// All admin routes require admin token
+router.use(authMiddleware, isAdmin);
+
+// Create a new user (normal)
+router.post("/add-users", createUser);
 
 // Create a store (assign to store owner)
-router.post("/stores", authMiddleware, isAdmin, createStore);
+router.post("/add-stores", createStore);
+
+// Promote existing user to store owner
+router.post("/promote-user", promoteUserToStoreOwner);
 
 // Dashboard stats → total users, stores, ratings
-router.get("/dashboard", authMiddleware, isAdmin, getDashboardStats);
+router.get("/dashboard", getDashboardStats);
 
-// List stores (filter by name, email, address, role)
-router.get("/stores", authMiddleware, isAdmin, getStoresList);
+// List stores with filters
+router.get("/stores", getStoresList);
 
-// List users (normal + store owners, with filters)
-router.get("/users", authMiddleware, isAdmin, getUsersList);
+// List users with filters
+router.get("/users", getUsersList);
 
 export default router;
