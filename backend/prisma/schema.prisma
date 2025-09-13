@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")   // Neon DB or local DB
+}
+
+// User Roles
+enum Role {
+  ADMIN        // System Administrator
+  USER         // Normal User
+  STORE_OWNER  // Store Owner
+}
+
+// USERS TABLE
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(60)
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)  // hashed password
+  address   String?  @db.VarChar(400)
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+
+  // Relations
+  stores    Store[]   @relation("OwnerStores")  // if Store Owner
+  ratings   Rating[]  // if Normal User
+}
+
+// STORES TABLE
+model Store {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  email     String?  @db.VarChar(255)
+  address   String   @db.VarChar(400)
+  createdAt DateTime @default(now())
+
+  // Relations
+  ownerId   Int       // store_owner_id
+  owner     User      @relation("OwnerStores", fields: [ownerId], references: [id])
+  ratings   Rating[]
+}
+
+// RATINGS TABLE
+model Rating {
+  id        Int      @id @default(autoincrement())
+  rating    Int      // must be 1–5 (validate in code)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId  Int
+  storeId Int
+  user    User  @relation(fields: [userId], references: [id])
+  store   Store @relation(fields: [storeId], references: [id])
+
+  // Prevent multiple ratings per store from same user
+  @@unique([userId, storeId])
+}
