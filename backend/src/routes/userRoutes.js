@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllStores, searchStores, submitRating, getMyRatings } from "../controllers/userController.js";
+import { getAllStores, searchStores, submitRating, getMyRatings, deleteRating } from "../controllers/userController.js";
 import { authMiddleware, isUser } from "../middleware/authMiddleware.js";
 
 const router = Router();
@@ -15,5 +15,8 @@ router.post("/stores/rate", authMiddleware, isUser, submitRating);
 
 // Get current user's ratings history
 router.get("/my-ratings", authMiddleware, isUser, getMyRatings);
+
+// Delete a rating
+router.delete("/stores/rate", authMiddleware, isUser, deleteRating);
 
 export default router;

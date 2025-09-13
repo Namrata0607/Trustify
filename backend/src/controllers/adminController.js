@@ -178,6 +178,8 @@ export const getStoresList = async (req, res, next) => {
       },
     });
 
+    // console.log(stores[0].ratings.reduce((a, r) => a + r.rating, 0) / stores[0].ratings.length);
+
     const storesWithRatings = stores.map(store => ({
       id: store.id,
       name: store.name,
@@ -185,7 +187,7 @@ export const getStoresList = async (req, res, next) => {
       address: store.address,
       averageRating:
         store.ratings.length > 0
-          ? store.ratings.reduce((a, r) => a + r.value, 0) / store.ratings.length
+          ? Math.round((store.ratings.reduce((a, r) => a + r.rating, 0) / store.ratings.length) * 10) / 10
           : null,
       owner: store.owner,
     }));
@@ -219,3 +221,77 @@ export const getUsersList = async (req, res, next) => {
     next(error);
   }
 };
+
+// ================== Delete User ==================
+// If user is normal: delete user → ratings auto-delete (cascade).
+// If user is store owner: don’t delete directly. Instead downgrade to USER.
+
+export const deleteUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await prisma.user.findUnique({ where: { id: parseInt(userId) } });
+    if (!user) throw new Error("User not found");
+
+    if (user.role === "STORE_OWNER") {
+      // prevent full delete, just downgrade
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { role: "USER" }
+      });
+      return res.json({ message: "Store owner downgraded to normal user" });
+    }
+
+    // if normal user, delete (ratings cascade automatically)
+    await prisma.user.delete({ where: { id: user.id } });
+    res.json({ message: "User and their ratings deleted" });
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ================== Update store ==================
+export const updateStore = async (req, res, next) => {
+  try {
+    const { storeId } = req.params;
+    const { name, email, address } = req.body;
+
+    const store = await prisma.store.update({
+      where: { id: parseInt(storeId) },
+      data: { name, email, address }
+    });
+
+    res.json(store);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ================== Delete Store ==================
+// Ratings cascade auto-delete.
+// Store owner's role reset to USER.
+
+export const deleteStore = async (req, res, next) => {
+  try {
+    const { storeId } = req.params;
+
+    const store = await prisma.store.findUnique({ where: { id: parseInt(storeId) } });
+    if (!store) throw new Error("Store not found");
+
+    if (store.ownerId) {
+      await prisma.user.update({
+        where: { id: store.ownerId },
+        data: { role: "USER" }
+      });
+    }
+
+    await prisma.store.delete({ where: { id: store.id } });
+    res.json({ message: "Store deleted and owner role reset to USER" });
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ================== Update user ==================

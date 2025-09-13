@@ -6,6 +6,9 @@ import {
   getDashboardStats,
   getStoresList,
   getUsersList,
+  deleteUser,
+  updateStore,
+  deleteStore,
 } from "../controllers/adminController.js";
 
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
@@ -32,5 +35,14 @@ router.get("/stores", getStoresList);
 
 // List users with filters
 router.get("/users", getUsersList);
+
+// Delete user
+router.delete("/users/:userId", authMiddleware, isAdmin, deleteUser);
+
+// Update store details
+router.put("/stores/:storeId", authMiddleware, isAdmin, updateStore);
+
+// Delete store
+router.delete("/stores/:storeId", authMiddleware, isAdmin, deleteStore);
 
 export default router;

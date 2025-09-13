@@ -143,3 +143,21 @@ export const getMyRatings = async (req, res, next) => {
     next(error);
   }
 };
+
+//  user deletes own rating
+export const deleteRating = async (req, res, next) => {
+  try {
+    const { storeId } = req.body;
+    const userId = req.user.id;
+
+    await prisma.rating.delete({
+      where: {
+        userId_storeId: { userId, storeId }
+      }
+    });
+
+    res.json({ message: "Rating deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
+};

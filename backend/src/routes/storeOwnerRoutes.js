@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { getMyStoreRatings, getMyStoreAverage } from "../controllers/storeOwner.controller.js";
-import { authMiddleware, isStoreOwner } from "../middleware/auth.middleware.js";
+import { getMyStoreRatings, getMyStoreAverage } from "../controllers/storeOwnerController.js";
+import { authMiddleware, isStoreOwner } from "../middleware/authMiddleware.js";
 
 const router = Router();
 

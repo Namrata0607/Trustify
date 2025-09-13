@@ -34,7 +34,7 @@ model User {
 
   // Relations
   stores    Store[]   @relation("OwnerStores")  // if Store Owner
-  ratings   Rating[]  // if Normal User
+  ratings   Rating[]  @relation("UserRatings") // ratings cascade when user deleted //if no user
 }
 
 // STORES TABLE
@@ -47,8 +47,8 @@ model Store {
 
   // Relations
   ownerId   Int       // store_owner_id
-  owner     User      @relation("OwnerStores", fields: [ownerId], references: [id])
-  ratings   Rating[]
+  owner     User      @relation("OwnerStores", fields: [ownerId], references: [id], onDelete: Restrict)
+  ratings   Rating[]  @relation("StoreRatings") // ratings cascade when store deleted
 }
 
 // RATINGS TABLE
@@ -61,8 +61,8 @@ model Rating {
   // Relations
   userId  Int
   storeId Int
-  user    User  @relation(fields: [userId], references: [id])
-  store   Store @relation(fields: [storeId], references: [id])
+  user    User  @relation("UserRatings", fields: [userId], references: [id], onDelete: Cascade)
+  store   Store @relation("StoreRatings", fields: [storeId], references: [id], onDelete: Cascade)
 
   // Prevent multiple ratings per store from same user
   @@unique([userId, storeId])
