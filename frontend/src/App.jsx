@@ -11,10 +11,12 @@ const Login = lazy(() => import('./pages/Login'));
 const Navbar = lazy(() => import('./components/Navbar'));
 const Footer = lazy(() => import('./components/Footer'));
 const AdminModule = lazy(() => import('./pages/AdminModule'));
+const OwnerModule = lazy(() => import('./pages/OwnerModule'));
+const UserModule = lazy(() => import('./pages/UserModule'));
 
 function AppContent() {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isModuleRoute = location.pathname.startsWith('/admin') || location.pathname.startsWith('/owner') || location.pathname.startsWith('/user');
 
   return (
     <Suspense fallback={
@@ -22,15 +24,17 @@ function AppContent() {
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     }>
-      {!isAdminRoute && <Navbar />}
+      {!isModuleRoute && <Navbar />}
       <Routes>
         {/* Default route → Home */}
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminModule />} />
+        <Route path="/owner" element={<OwnerModule />} />
+        <Route path="/user" element={<UserModule />} />
       </Routes>
-      {!isAdminRoute && <Footer />}
+      {!isModuleRoute && <Footer />}
     </Suspense>
   );
 }

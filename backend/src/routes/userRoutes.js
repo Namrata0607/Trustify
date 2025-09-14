@@ -8,7 +8,7 @@ const router = Router();
 router.get("/stores", authMiddleware, isUser, getAllStores);
 
 // Search stores
-router.get("/stores/search", authMiddleware, isUser, searchStores);
+// router.get("/stores/search", authMiddleware, isUser, searchStores);
 
 // Submit or update rating
 router.post("/stores/rate", authMiddleware, isUser, submitRating);

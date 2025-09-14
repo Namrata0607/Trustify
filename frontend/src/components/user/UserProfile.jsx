@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { adminAPI } from '../../utils/api';
+import { useAuth } from '../../context/AuthContext';
 import { UserCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { userAPI } from '../../utils/api';
 
-const AdminProfile = () => {
+const UserProfile = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
-  const [_loading, setLoading] = useState(true);
-  const [_error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState({ type: '', text: '' });
   
-  const [adminData, setAdminData] = useState({
+  const [userData, setUserData] = useState({
     name: '',
     email: '',
     address: '',
-    role: 'ADMIN'
+    phone: '',
+    role: 'USER'
   });
 
-  const [formData, setFormData] = useState(adminData);
+  const [formData, setFormData] = useState(userData);
   
   const [passwordData, setPasswordData] = useState({
     oldPassword: '',
@@ -23,84 +27,73 @@ const AdminProfile = () => {
     confirmPassword: ''
   });
 
-  // Fetch admin profile data
   useEffect(() => {
-    const fetchAdminProfile = async () => {
+    const fetchUserProfile = async () => {
       try {
         setLoading(true);
-        // Get current user profile - you'll need to add this API endpoint
+        // Get current user profile from localStorage
         const currentUser = JSON.parse(localStorage.getItem('trustify_user') || '{}');
-        setAdminData({
-          name: currentUser.name || 'Admin User',
-          email: currentUser.email || 'admin@trustify.com',
+        setUserData({
+          name: currentUser.name || 'User',
+          email: currentUser.email || 'user@trustify.com',
           address: currentUser.address || 'Location not set',
-          role: 'ADMIN'
+          phone: currentUser.phone || 'Phone not set',
+          role: 'USER'
         });
         setFormData({
-          name: currentUser.name || 'Admin User',
-          email: currentUser.email || 'admin@trustify.com',
+          name: currentUser.name || 'User',
+          email: currentUser.email || 'user@trustify.com',
           address: currentUser.address || 'Location not set',
-          role: 'ADMIN'
+          phone: currentUser.phone || 'Phone not set',
+          role: 'USER'
         });
-      } catch {
+      } catch (err) {
         setError('Failed to load profile data');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAdminProfile();
+    fetchUserProfile();
   }, []);
 
   const handleSaveProfile = () => {
-    setAdminData(formData);
+    setUserData(formData);
     setIsEditing(false);
     // Here you would typically make an API call to update the profile
-    alert('Profile updated successfully!');
+    setMessage({ type: 'success', text: 'Profile updated successfully!' });
+    setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
   const handleCancelEdit = () => {
-    setFormData(adminData);
+    setFormData(userData);
     setIsEditing(false);
   };
 
-  const handlePasswordChange = async () => {
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('New passwords do not match!');
+      setMessage({ type: 'error', text: 'New passwords do not match!' });
       return;
     }
     if (passwordData.newPassword.length < 8) {
-      alert('Password must be at least 8 characters long!');
+      setMessage({ type: 'error', text: 'Password must be at least 8 characters long!' });
       return;
     }
     
     try {
       setLoading(true);
-    //   const response = await fetch('/api/auth/update-password', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': `Bearer ${localStorage.getItem('token')}`
-    //     },
-    //     body: JSON.stringify({
-    //       oldPassword: passwordData.oldPassword,
-    //       newPassword: passwordData.newPassword
-    //     })
-    //   });
-      const response = await adminAPI.updatePassword({
-        oldPassword: passwordData.oldPassword,
-        newPassword: passwordData.newPassword
-      });
-
-
-      alert(response.message || 'Password changed successfully!');
+      await userAPI.updatePassword(passwordData.oldPassword, passwordData.newPassword);
+      
+      setMessage({ type: 'success', text: 'Password changed successfully!' });
       setPasswordData({
         oldPassword: '',
         newPassword: '',
         confirmPassword: ''
       });
+      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     } catch (err) {
-      alert('Error: ' + err.message);
+      setMessage({ type: 'error', text: 'Error: ' + err.message });
     } finally {
       setLoading(false);
     }
@@ -120,6 +113,17 @@ const AdminProfile = () => {
         </div>
       </div>
 
+      {/* Status Message */}
+      {message.text && (
+        <div
+          className={`p-4 mb-6 rounded-md ${
+            message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
+
       {/* Profile Card */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="bg-gradient-to-r from-blue-300 to-purple-300 h-32"></div>
@@ -127,13 +131,12 @@ const AdminProfile = () => {
           <div className="flex items-end -mt-12">
             <div className="w-32 h-32 bg-white rounded-full border-4 border-white flex items-center justify-center">
               <div className="w-28 h-28 bg-gradient-to-br from-blue-500 to-purple-400 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                {getInitials(adminData.name)}
+                {getInitials(userData.name)}
               </div>
             </div>
             <div className="ml-6 pb-4">
-              <h2 className="text-2xl font-bold text-grey">{adminData.name}</h2>
-              <p className="text-gray-600">{adminData.role}</p>
-              {/* <p className="text-sm text-gray-500">Member since {adminData.joinDate}</p> */}
+              <h2 className="text-2xl font-bold text-grey">{userData.name}</h2>
+              <p className="text-gray-600">{userData.role}</p>
             </div>
           </div>
         </div>
@@ -167,7 +170,7 @@ const AdminProfile = () => {
           {/* Profile Information Tab */}
           {activeTab === 'profile' && (
             <div className="space-y-6">
-              {/* <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center">
                 <h3 className="text-lg font-medium text-gray-900">Personal Information</h3>
                 <button
                   onClick={() => setIsEditing(!isEditing)}
@@ -175,7 +178,7 @@ const AdminProfile = () => {
                 >
                   {isEditing ? 'Cancel' : 'Edit Profile'}
                 </button>
-              </div> */}
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -188,7 +191,7 @@ const AdminProfile = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   ) : (
-                    <p className="text-gray-900">{adminData.name}</p>
+                    <p className="text-gray-900">{userData.name}</p>
                   )}
                 </div>
 
@@ -202,37 +205,37 @@ const AdminProfile = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   ) : (
-                    <p className="text-gray-900">{adminData.email}</p>
+                    <p className="text-gray-900">{userData.email}</p>
                   )}
                 </div>
 
-                <div className="md:col-span-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <p className="text-gray-900">{userData.phone}</p>
+                  )}
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
                   {isEditing ? (
-                    <textarea
+                    <input
+                      type="text"
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      rows="3"
                     />
                   ) : (
-                    <p className="text-gray-900">{adminData.address}</p>
+                    <p className="text-gray-900">{userData.address}</p>
                   )}
                 </div>
-
-                {/* <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
-                  {isEditing ? (
-                    <textarea
-                      value={formData.bio}
-                      onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      rows="4"
-                    />
-                  ) : (
-                    <p className="text-gray-900">{adminData.bio}</p>
-                  )}
-                </div> */}
               </div>
 
               {isEditing && (
@@ -263,7 +266,7 @@ const AdminProfile = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
                   <input
-                    type="text"
+                    type="password"
                     value={passwordData.oldPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -273,7 +276,7 @@ const AdminProfile = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
                   <input
-                    type="text"
+                    type="password"
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -283,7 +286,7 @@ const AdminProfile = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
                   <input
-                    type="text"
+                    type="password"
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -319,4 +322,4 @@ const AdminProfile = () => {
   );
 };
 
-export default AdminProfile;
+export default UserProfile;

@@ -14,8 +14,19 @@ const ratingSchema = z.object({
 export const getAllStores = async (req, res, next) => {
   try {
     const userId = req.user.id;
-
+    
+    // Extract pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Get total count for pagination
+    const totalStores = await prisma.store.count();
+    
+    // Get stores with pagination
     const stores = await prisma.store.findMany({
+      skip: skip,
+      take: limit,
       include: {
         ratings: true, // include ratings for average calculation
       },
@@ -38,7 +49,16 @@ export const getAllStores = async (req, res, next) => {
       };
     });
 
-    res.json(formattedStores);
+    // Send response with pagination metadata
+    res.json({
+      stores: formattedStores,
+      pagination: {
+        total: totalStores,
+        page: page,
+        limit: limit,
+        pages: Math.ceil(totalStores / limit)
+      }
+    });
   } catch (error) {
     next(error);
   }
@@ -49,14 +69,29 @@ export const searchStores = async (req, res, next) => {
   try {
     const { q } = req.query; // e.g., /stores/search?q=Kolhapur
     const userId = req.user.id;
+    
+    // Extract pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Define search criteria
+    const searchCriteria = {
+      OR: [
+        { name: { contains: q, mode: "insensitive" } },
+        { address: { contains: q, mode: "insensitive" } },
+      ]
+    };
+    
+    // Get total count for pagination
+    const totalStores = await prisma.store.count({
+      where: searchCriteria
+    });
 
     const stores = await prisma.store.findMany({
-      where: {
-        OR: [
-          { name: { contains: q, mode: "insensitive" } },
-          { address: { contains: q, mode: "insensitive" } },
-        ],
-      },
+      where: searchCriteria,
+      skip: skip,
+      take: limit,
       include: { ratings: true },
     });
 
@@ -77,7 +112,16 @@ export const searchStores = async (req, res, next) => {
       };
     });
 
-    res.json(formattedStores);
+    // Send response with pagination metadata
+    res.json({
+      stores: formattedStores,
+      pagination: {
+        total: totalStores,
+        page: page,
+        limit: limit,
+        pages: Math.ceil(totalStores / limit)
+      }
+    });
   } catch (error) {
     next(error);
   }
@@ -116,9 +160,21 @@ export const submitRating = async (req, res, next) => {
 export const getMyRatings = async (req, res, next) => {
   try {
     const userId = req.user.id;
+    
+    // Extract pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Get total count for pagination
+    const totalRatings = await prisma.rating.count({
+      where: { userId }
+    });
 
     const ratings = await prisma.rating.findMany({
       where: { userId },
+      skip: skip,
+      take: limit,
       include: {
         store: {
           select: {
@@ -128,6 +184,9 @@ export const getMyRatings = async (req, res, next) => {
           },
         },
       },
+      orderBy: {
+        createdAt: 'desc'  // Most recent ratings first
+      }
     });
 
     const formatted = ratings.map((r) => ({
@@ -138,7 +197,16 @@ export const getMyRatings = async (req, res, next) => {
       createdAt: r.createdAt,
     }));
 
-    res.json(formatted);
+    // Send response with pagination metadata
+    res.json({
+      ratings: formatted,
+      pagination: {
+        total: totalRatings,
+        page: page,
+        limit: limit,
+        pages: Math.ceil(totalRatings / limit)
+      }
+    });
   } catch (error) {
     next(error);
   }

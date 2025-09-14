@@ -53,10 +53,14 @@ const Login = () => {
       
       // Redirect based on user role
       setTimeout(() => {
-        if (response.user.role === 'ADMIN' || response.user.role === 'SYSTEM_ADMINISTRATOR') {
+        if (response.user.role === 'ADMIN') {
           navigate('/admin');
+        } else if (response.user.role === 'STORE_OWNER') {
+          navigate('/owner');
+        } else if (response.user.role === 'USER') {
+          navigate('/user');
         } else {
-          navigate('/'); // Redirect to home for regular users
+          navigate('/'); // Fallback for any undefined roles
         }
       }, 1000);
       

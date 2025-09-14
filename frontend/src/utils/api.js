@@ -1,6 +1,6 @@
 // API Configuration
-// const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://trustify-r0jd.onrender.com';
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://trustify-r0jd.onrender.com';
+// const BASE_URL = 'http://localhost:3000';
 
 // Generic API request function
 export const apiRequest = async (endpoint, options = {}) => {
@@ -127,6 +127,59 @@ export const adminAPI = {
 };
 
     
+
+// User API functions
+export const userAPI = {
+  // Get all stores for user
+  getStores: async (page = 1, limit = 10, search = '') => {
+    const queryParams = new URLSearchParams({
+      page,
+      limit,
+      ...(search && { search })
+    }).toString();
+    
+    return apiRequest(`/api/user/stores?${queryParams}`, {
+      method: 'GET'
+    });
+  },
+  
+  // Get user's ratings history
+  getUserRatings: async (page = 1, limit = 10, search = '') => {
+    const queryParams = new URLSearchParams({
+      page,
+      limit,
+      ...(search && { search })
+    }).toString();
+    
+    return apiRequest(`/api/user/my-ratings?${queryParams}`, {
+      method: 'GET'
+    });
+  },
+  
+  // Submit or update a rating
+  rateStore: async (storeId, rating) => {
+    return apiRequest('/api/user/stores/rate', {
+      method: 'POST',
+      body: JSON.stringify({ storeId, rating })
+    });
+  },
+  
+  // Delete a rating
+  deleteRating: async (storeId) => {
+    return apiRequest('/api/user/stores/rate', {
+      method: 'DELETE',
+      body: JSON.stringify({ storeId })
+    });
+  },
+  
+  // Update user password
+  updatePassword: async (oldPassword, newPassword) => {
+    return apiRequest('/api/auth/update-password', {
+      method: 'PUT',
+      body: JSON.stringify({ oldPassword, newPassword })
+    });
+  }
+};
 
 // Export base URL for other uses
 export { BASE_URL };
