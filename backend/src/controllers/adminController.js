@@ -55,58 +55,58 @@ export const createUser = async (req, res, next) => {
 };
 
 // ================== Add Store (with Owner) ==================
-export const createStore = async (req, res, next) => {
-  try {
-    const data = validateInput(createStoreSchema, req.body);
+// export const createStore = async (req, res, next) => {
+//   try {
+//     const data = validateInput(createStoreSchema, req.body);
 
-    let owner = await prisma.user.findUnique({ where: { email: data.ownerEmail } });
+//     let owner = await prisma.user.findUnique({ where: { email: data.ownerEmail } });
 
-    if (owner) {
-      if (owner.role === "USER") {
-        owner = await prisma.user.update({
-          where: { email: data.ownerEmail },
-          data: { role: "STORE_OWNER" },
-        });
-      }
-    } else {
-      if (!data.ownerPassword || !data.ownerName) {
-        res.status(400);
-        throw new Error("Owner name & password required when creating new owner");
-      }
+//     if (owner) {
+//       if (owner.role === "USER") {
+//         owner = await prisma.user.update({
+//           where: { email: data.ownerEmail },
+//           data: { role: "STORE_OWNER" },
+//         });
+//       }
+//     } else {
+//       if (!data.ownerPassword || !data.ownerName) {
+//         res.status(400);
+//         throw new Error("Owner name & password required when creating new owner");
+//       }
 
-      const hashedPassword = await bcrypt.hash(data.ownerPassword, 10);
+//       const hashedPassword = await bcrypt.hash(data.ownerPassword, 10);
 
-      owner = await prisma.user.create({
-        data: {
-          name: data.ownerName,
-          email: data.ownerEmail,
-          password: hashedPassword,
-          role: "STORE_OWNER",
-        },
-      });
-    }
+//       owner = await prisma.user.create({
+//         data: {
+//           name: data.ownerName,
+//           email: data.ownerEmail,
+//           password: hashedPassword,
+//           role: "STORE_OWNER",
+//         },
+//       });
+//     }
 
-    const store = await prisma.store.create({
-      data: {
-        name: data.storeName,
-        email: data.storeEmail,
-        address: data.storeAddress,
-        ownerId: owner.id,
-      },
-    });
+//     const store = await prisma.store.create({
+//       data: {
+//         name: data.storeName,
+//         email: data.storeEmail,
+//         address: data.storeAddress,
+//         ownerId: owner.id,
+//       },
+//     });
 
-    res.status(201).json({
-      message: "✅ Store created successfully",
-      store,
-      owner: { id: owner.id, name: owner.name, email: owner.email, role: owner.role },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.status(201).json({
+//       message: "✅ Store created successfully",
+//       store,
+//       owner: { id: owner.id, name: owner.name, email: owner.email, role: owner.role },
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 // ================== Promote User to Store Owner ==================
-export const promoteUserToStoreOwner = async (req, res, next) => {
+export const createStore = async (req, res, next) => {
   try {
     const { userId, storeName, storeEmail, storeAddress } = req.body;
 
@@ -205,18 +205,34 @@ export const getUsersList = async (req, res, next) => {
 
     const users = await prisma.user.findMany({
       where: {
-        name: name ? { contains: name, mode: "insensitive" } : undefined,
-        email: email ? { contains: email, mode: "insensitive" } : undefined,
-        address: address ? { contains: address, mode: "insensitive" } : undefined,
-        role: role ? role.toUpperCase() : undefined,
+      name: name ? { contains: name, mode: "insensitive" } : undefined,
+      email: email ? { contains: email, mode: "insensitive" } : undefined,
+      address: address ? { contains: address, mode: "insensitive" } : undefined,
+      role: role ? role.toUpperCase() : undefined,
       },
       include: {
-        stores: true,
+      stores: {
+        include: {
         ratings: true,
+        },
+      },
+      ratings: true,
       },
     });
 
-    res.json(users);
+    // Add averageRating to each store
+    const usersWithStoreRatings = users.map(user => ({
+      ...user,
+      stores: user.stores.map(store => ({
+      ...store,
+      averageRating:
+        store.ratings.length > 0
+        ? Math.round((store.ratings.reduce((a, r) => a + r.rating, 0) / store.ratings.length) * 10) / 10
+        : null,
+      })),
+    }));
+
+    res.json(usersWithStoreRatings);
   } catch (error) {
     next(error);
   }
@@ -234,12 +250,19 @@ export const deleteUser = async (req, res, next) => {
     if (!user) throw new Error("User not found");
 
     if (user.role === "STORE_OWNER") {
-      // prevent full delete, just downgrade
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { role: "USER" }
+      // Check if store owner has any active stores
+      const storeCount = await prisma.store.count({
+        where: { ownerId: user.id }
       });
-      return res.json({ message: "Store owner downgraded to normal user" });
+      
+      if (storeCount > 0) {
+        res.status(400);
+        throw new Error(`Cannot delete store owner who has ${storeCount} active store(s). Delete stores first.`);
+      }
+      
+      // Only delete if no stores exist
+      await prisma.user.delete({ where: { id: user.id } });
+      return res.json({ message: "Store owner deleted (no active stores)" });
     }
 
     // if normal user, delete (ratings cascade automatically)
@@ -293,5 +316,3 @@ export const deleteStore = async (req, res, next) => {
     next(err);
   }
 };
-
-// ================== Update user ==================

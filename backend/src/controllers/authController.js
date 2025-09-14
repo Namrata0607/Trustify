@@ -95,7 +95,7 @@ export const login = async (req, res, next) => {
     res.json({
       message: "Login successful",
       token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, address: user.address},
     });
   } catch (error) {
     next(error);
@@ -116,6 +116,7 @@ export const logout = async (req, res, next) => {
 export const updatePassword = async (req, res, next) => {
   try {
     const { oldPassword, newPassword } = req.body;
+    console.log(req.body);
 
     if (!oldPassword || !newPassword) {
       res.status(400);

@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   createUser,
   createStore,
-  promoteUserToStoreOwner,
+  // promoteUserToStoreOwner,
   getDashboardStats,
   getStoresList,
   getUsersList,
@@ -24,8 +24,8 @@ router.post("/add-users", createUser);
 // Create a store (assign to store owner)
 router.post("/add-stores", createStore);
 
-// Promote existing user to store owner
-router.post("/promote-user", promoteUserToStoreOwner);
+// Create a store (assign to store owner)
+// router.post("/promote-user", createStore);
 
 // Dashboard stats → total users, stores, ratings
 router.get("/dashboard", getDashboardStats);
