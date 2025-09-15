@@ -110,22 +110,52 @@ const AdminUsers = () => {
     setShowAddModal(true);
   };
 
-  const handleUpdateUser = () => {
-    const updatedUser = { ...editingUser, ...newUser };
-    if (!newUser.password) {
-      delete updatedUser.password;
+  const handleUpdateUser = async () => {
+    try {
+      setLoading(true);
+      
+      // Prepare user data for API (remove empty password)
+      const userData = {
+        name: newUser.name,
+        email: newUser.email,
+        address: newUser.address
+      };
+      
+      // Only include password if it's provided
+      if (newUser.password && newUser.password.trim()) {
+        userData.password = newUser.password;
+      }
+      
+      await adminAPI.updateUser(editingUser.id, userData);
+      
+      // Refresh users list after successful update
+      await fetchUsers();
+      
+      // Reset form and close modal
+      setEditingUser(null);
+      setNewUser({ name: '', email: '', password: '', address: '' });
+      setShowAddModal(false);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      setError('Failed to update user: ' + error.message);
+    } finally {
+      setLoading(false);
     }
-    setUsers(users.map(user => 
-      user.id === editingUser.id ? updatedUser : user
-    ));
-    setEditingUser(null);
-    setNewUser({ name: '', email: '', password: '', address: '', role: 'NORMAL_USER' });
-    setShowAddModal(false);
   };
 
-  const handleDeleteUser = (id) => {
+  const handleDeleteUser = async (id) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
-      setUsers(users.filter(user => user.id !== id));
+      try {
+        setLoading(true);
+        await adminAPI.deleteUser(id);
+        // Refresh the users list after successful deletion
+        await fetchUsers();
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        setError('Failed to delete user: ' + error.message);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

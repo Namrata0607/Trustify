@@ -31,16 +31,27 @@ const AddStoreModal = ({ isOpen, onClose, onStoreAdded }) => {
     setIsLoadingUsers(true);
     try {
       const response = await adminAPI.getUsers();
+      console.log('Users API response:', response);
 
-      // Since API returns an array directly, just set it
-      setUsers(response);
+      // Handle different response structures
+      let usersArray = [];
+      if (Array.isArray(response)) {
+        usersArray = response;
+      } else if (response && Array.isArray(response.users)) {
+        usersArray = response.users;
+      } else if (response && Array.isArray(response.data)) {
+        usersArray = response.data;
+      }
+
+      setUsers(usersArray);
+      console.log('Users set:', usersArray);
     } catch (error) {
       console.error('Error fetching users:', error);
       // For development/testing, add some mock users
       const mockUsers = [
-        { id: 1, name: 'John Doe', email: 'john@example.com', role: 'user' },
-        { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'user' },
-        { id: 3, name: 'Mike Johnson', email: 'mike@example.com', role: 'store_owner' }
+        { id: 1, name: 'John Doe', email: 'john@example.com', role: 'USER' },
+        { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'USER' },
+        { id: 3, name: 'Mike Johnson', email: 'mike@example.com', role: 'USER' }
       ];
       setUsers(mockUsers);
     } finally {

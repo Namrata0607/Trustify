@@ -10,21 +10,30 @@ const AutocompleteInput = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState(users || []);
+  const [filteredUsers, setFilteredUsers] = useState(Array.isArray(users) ? users : []);
   const [dropdownPosition, setDropdownPosition] = useState('below');
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
 
   // Filter users based on search term
   useEffect(() => {
-    if (!users) return;
+    if (!users || !Array.isArray(users)) {
+      console.log('Users is not an array:', users);
+      setFilteredUsers([]);
+      return;
+    }
+    
+    console.log('All users received:', users);
     
     // Filter to show only normal users (exclude admins) who can own stores
-   const normalUsers = users.filter(user => user.role === 'USER' || !user.role);
+    const normalUsers = users.filter(user => user.role === 'USER' || !user.role);
+    console.log('Normal users after role filter:', normalUsers);
+    
     const filtered = normalUsers.filter(user =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    console.log('Filtered users after search:', filtered);
     setFilteredUsers(filtered);
   }, [searchTerm, users]);
 

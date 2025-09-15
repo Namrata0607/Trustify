@@ -85,8 +85,13 @@ export const adminAPI = {
   },
 
   // Get all users
-  getUsers: async () => {
-    return apiRequest('/api/admin/users', {
+  getUsers: async (params = {}) => {
+    const queryParams = new URLSearchParams({
+      limit: 100, // Get more users for the dropdown
+      page: 1,
+      ...params
+    });
+    return apiRequest(`/api/admin/users?${queryParams}`, {
       method: 'GET'
     });
   },
@@ -114,6 +119,7 @@ export const adminAPI = {
     });
   },
 
+  // Update password
   updatePassword: async (passwordData) => {
     return apiRequest('/api/auth/update-password', {
       method: 'PUT',
@@ -121,15 +127,33 @@ export const adminAPI = {
     });
   },
 
+  // Update store
   updateStore: async (storeId, storeData) => {
     return apiRequest(`/api/admin/stores/${storeId}`, {
       method: 'PUT',
       body: JSON.stringify(storeData)
     });
   },
+
+  //  Delete store
   deleteStore: async (storeId) => {
     return apiRequest(`/api/admin/stores/${storeId}`, {
       method: 'DELETE'
+    });
+  },
+
+  // Delete user
+  deleteUser: async (userId) => {
+    return apiRequest(`/api/admin/users/${userId}`, {
+      method: 'DELETE'
+    });
+  },
+
+  // Update user
+  updateUser: async (userId, userData) => {
+    return apiRequest(`/api/admin/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData)
     });
   }
 };
