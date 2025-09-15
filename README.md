@@ -8,6 +8,17 @@
   <img src="https://img.shields.io/badge/Styling-TailwindCSS-cyan" alt="Tailwind CSS">
 </div>
 
+## 🌐 Live Demo
+
+<div align="center">
+  <h3>
+    <a href="https://trustify-mocha.vercel.app" target="_blank">
+      🚀 Visit Live Application: https://trustify-mocha.vercel.app
+    </a>
+  </h3>
+  <p><em>Experience Trustify in action! Click the link above to explore our platform.</em></p>
+</div>
+
 ## 🚨 Important Notice
 
 > **⚠️ Backend Hosting Information**  
@@ -26,6 +37,7 @@ Password: Trustify@1000
 
 ## 📖 Table of Contents
 
+- [Live Demo](#live-demo)
 - [Overview](#overview)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
@@ -205,6 +217,53 @@ Our platform eliminates fake reviews while promoting genuine customer experience
    - Frontend: `http://localhost:5173`
    - Backend API: `http://localhost:3000`
 
+### **Environment Variables Setup**
+
+**Backend (.env)**
+```env
+# Database Configuration
+DATABASE_URL="postgresql://neondb_owner:npg_q4uVdxrYgKh8@ep-snowy-king-adl62mbh-pooler.c-2.us-east-1.aws.neon.tech/trustify_db?sslmode=require"
+
+# JWT Configuration
+JWT_SECRET="supersecretkey123"
+
+```
+
+**Frontend (.env)**
+```env
+# API Configuration
+VITE_API_BASE_URL=https://trustify-r0jd.onrender.com
+
+```
+
+**🔒 Security Best Practices:**
+- ✅ Never commit `.env` files to version control (already in `.gitignore`)
+- ✅ Use different secrets for development and production environments
+- ✅ Keep JWT secrets at least 32 characters long for security
+- ✅ Use environment-specific database URLs
+- ✅ Store production secrets securely in hosting platforms
+
+**🛠️ Environment Setup Steps:**
+
+1. **Backend Environment**
+   ```bash
+   cd backend
+   cp .env.example .env  # Copy template
+   # Edit .env file with your actual database credentials
+   ```
+
+2. **Frontend Environment**
+   ```bash
+   cd frontend
+   cp .env.example .env  # Copy template
+   # Edit .env file with your API URL
+   ```
+
+3. **Production Environment**
+   - Set environment variables in your hosting platform (Render, Vercel, etc.)
+   - Use secure, randomly generated JWT secrets
+   - Configure production database URLs
+
 ---
 
 ## 📚 API Documentation
@@ -303,6 +362,11 @@ DELETE /api/admin/users/:id          - Delete user
 2. Configure build settings
 3. Set environment variables
 4. Deploy automatically on push
+
+**🌐 Live Production Deployment:**
+- **URL**: https://trustify-mocha.vercel.app
+- **Status**: ✅ Active and Running
+- **Auto-deploy**: Enabled on main branch updates
 
 ### **Database Hosting**
 - **Production**: PostgreSQL on Render/Railway/Supabase
