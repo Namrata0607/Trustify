@@ -4,6 +4,20 @@ import { Link } from 'react-router-dom';
 function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      {/* Hosting Notice - Top Banner */}
+      <div className="bg-blue-50 border-b border-blue-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-center">
+            <svg className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-blue-700 text-center">
+              <span className="font-medium">Note:</span> Backend hosted on Render's free tier - may take a moment to start up. Please wait for initial loading.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         {/* Main Hero with Get Started Card */}
@@ -78,6 +92,20 @@ function Home() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Hosting Notice */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center justify-center">
+              <svg className="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-blue-700 text-center">
+                <span className="font-medium">Note:</span> Our backend is hosted on Render's free tier, which may take a moment to start up. Please be patient during initial loading.
+              </p>
             </div>
           </div>
         </div>
