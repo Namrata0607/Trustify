@@ -32,24 +32,6 @@ For testing and demonstration purposes:
 Email: admin@trustify.com
 Password: Trustify@1000
 ```
-
----
-
-## 📖 Table of Contents
-
-- [Live Demo](#live-demo)
-- [Overview](#overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Architecture](#architecture)
-- [User Roles](#user-roles)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Database Schema](#database-schema)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
-
 ---
 
 ## 🌟 Overview
@@ -266,89 +248,6 @@ VITE_API_BASE_URL=https://trustify-r0jd.onrender.com
 
 ---
 
-## 📚 API Documentation
-
-### **Authentication Endpoints**
-```
-POST /api/auth/signup     - User registration
-POST /api/auth/login      - User login
-POST /api/auth/logout     - User logout
-PUT  /api/auth/update-password - Password update
-```
-
-### **User Endpoints**
-```
-GET    /api/user/stores              - Get all stores (paginated)
-GET    /api/user/stores/search       - Search stores
-POST   /api/user/ratings             - Submit rating
-GET    /api/user/ratings/my          - Get user's ratings
-PUT    /api/user/profile             - Update profile
-```
-
-### **Store Owner Endpoints**
-```
-GET    /api/store-owner/ratings      - Get store ratings
-GET    /api/store-owner/analytics    - Get rating analytics
-PUT    /api/store-owner/profile      - Update store profile
-PUT    /api/store-owner/password     - Update password
-```
-
-### **Admin Endpoints**
-```
-GET    /api/admin/stores             - Get all stores (paginated)
-POST   /api/admin/stores             - Create new store
-PUT    /api/admin/stores/:id         - Update store
-DELETE /api/admin/stores/:id         - Delete store
-GET    /api/admin/users              - Get all users (paginated)
-PUT    /api/admin/users/:id          - Update user
-DELETE /api/admin/users/:id          - Delete user
-```
-
----
-
-## 🗄️ Database Schema
-
-### **Core Tables**
-
-**Users**
-```sql
-- id (UUID, Primary Key)
-- name (String)
-- email (String, Unique)
-- password (String, Hashed)
-- role (Enum: USER, STORE_OWNER, ADMIN)
-- address (String, Optional)
-- createdAt (DateTime)
-- updatedAt (DateTime)
-```
-
-**Stores**
-```sql
-- id (UUID, Primary Key)
-- name (String)
-- description (Text)
-- location (String)
-- category (String)
-- ownerId (UUID, Foreign Key → Users)
-- averageRating (Float)
-- totalRatings (Integer)
-- createdAt (DateTime)
-- updatedAt (DateTime)
-```
-
-**Ratings**
-```sql
-- id (UUID, Primary Key)
-- rating (Integer, 1-5)
-- comment (Text, Optional)
-- userId (UUID, Foreign Key → Users)
-- storeId (UUID, Foreign Key → Stores)
-- createdAt (DateTime)
-- updatedAt (DateTime)
-```
-
----
-
 ## 🌐 Deployment
 
 ### **Backend Deployment (Render)**
@@ -369,42 +268,8 @@ DELETE /api/admin/users/:id          - Delete user
 - **Auto-deploy**: Enabled on main branch updates
 
 ### **Database Hosting**
-- **Production**: PostgreSQL on Render/Railway/Supabase
-- **Development**: Local PostgreSQL instance
-
----
-
-## 🔧 Development Guidelines
-
-### **Code Structure**
-```
-trustify/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/     # Business logic
-│   │   ├── middleware/      # Auth & validation
-│   │   ├── routes/          # API endpoints
-│   │   ├── utils/           # Helper functions
-│   │   └── config/          # Configuration
-│   ├── prisma/              # Database schema
-│   └── package.json
-└── frontend/
-    ├── src/
-    │   ├── components/      # Reusable components
-    │   ├── pages/           # Route components
-    │   ├── context/         # Global state
-    │   ├── utils/           # API calls & helpers
-    │   └── assets/          # Static files
-    └── package.json
-```
-
-### **Best Practices**
-- 🔍 Use TypeScript for better type safety
-- 🧪 Write comprehensive tests
-- 📝 Document all API endpoints
-- 🔒 Implement proper error handling
-- 🎨 Follow consistent naming conventions
-- 📱 Ensure mobile responsiveness
+- **Production**: PostgreSQL hosted on [Neon](https://neon.tech)
+- **Development**: PostgreSQL instance on Neon
 
 ---
 
@@ -420,49 +285,11 @@ trustify/
 - [ ] **Advanced Search Filters** - Location-based, category-wise
 - [ ] **Review Moderation** - AI-powered content filtering
 - [ ] **Business Verification** - Verified business badges
-
 ---
 
-## 👨‍💻 Contributing
+## 🙏 Thank You
 
-We welcome contributions! Please follow these steps:
-
-1. **Fork the repository**
-2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit changes** (`git commit -m 'Add amazing feature'`)
-4. **Push to branch** (`git push origin feature/amazing-feature`)
-5. **Open a Pull Request**
-
-### **Development Setup**
-1. Follow the [Getting Started](#getting-started) guide
-2. Create a new branch for your feature
-3. Make changes and test thoroughly
-4. Submit a pull request with detailed description
+Thank you for your interest in Trustify!  
+We appreciate your support and feedback.  
 
 ---
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **React Team** - For the amazing React framework
-- **Prisma Team** - For the excellent ORM
-- **Tailwind CSS** - For the utility-first CSS framework
-- **Render** - For reliable cloud hosting
-- **Open Source Community** - For continuous inspiration
-
-
----
-
-<div align="center">
-  <p>
-    <strong>Built with ❤️ by the Trustify Team</strong>
-  </p>
-  <p>
-    <em>Creating trust through transparency</em>
-  </p>
-</div>
