@@ -228,7 +228,8 @@ const AdminStores = () => {
 
       {/* Stores Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th 
@@ -240,7 +241,7 @@ const AdminStores = () => {
                     setSortOrder('asc');
                   }
                 }}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               >
                 <div className="flex items-center space-x-1">
                   <span>Name</span>
@@ -256,7 +257,7 @@ const AdminStores = () => {
                     setSortOrder('asc');
                   }
                 }}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="hidden lg:table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               >
                 <div className="flex items-center space-x-1">
                   <span>Email</span>
@@ -272,7 +273,7 @@ const AdminStores = () => {
                     setSortOrder('asc');
                   }
                 }}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="hidden xl:table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               >
                 <div className="flex items-center space-x-1">
                   <span>Address</span>
@@ -288,7 +289,7 @@ const AdminStores = () => {
                     setSortOrder('asc');
                   }
                 }}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="hidden lg:table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               >
                 <div className="flex items-center space-x-1">
                   <span>Owner</span>
@@ -304,14 +305,14 @@ const AdminStores = () => {
                     setSortOrder('asc');
                   }
                 }}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               >
                 <div className="flex items-center space-x-1">
                   <span>Rating</span>
                   <ChevronUpDownIcon className="w-4 h-4" />
                 </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -319,7 +320,7 @@ const AdminStores = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredAndSortedStores.length === 0 ? (
               <tr>
-                <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                <td colSpan="6" className="px-3 md:px-6 py-12 text-center text-gray-500">
                   <BuildingStorefrontIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                   <p className="text-lg font-medium text-gray-900 mb-1">No stores found</p>
                   <p className="text-sm text-gray-500">
@@ -331,72 +332,78 @@ const AdminStores = () => {
               filteredAndSortedStores.map((store) => (
                 <tr key={store.id} className="hover:bg-gray-50">
                   {/* Name Column */}
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-3 md:px-6 py-4">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold mr-3">
+                      <div className="w-8 md:w-10 h-8 md:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs md:text-sm font-semibold mr-2 md:mr-3">
                         {store.name ? store.name.split(' ').map(n => n[0]).join('').slice(0, 2) : 'ST'}
                       </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{store.name || 'Unknown Store'}</div>
-                        <div className="text-sm text-gray-500">Store ID: {store.id}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium text-gray-900 truncate">{store.name || 'Unknown Store'}</div>
+                        <div className="text-xs text-gray-500">ID: {store.id}</div>
+                        {/* Show additional info on smaller screens */}
+                        <div className="lg:hidden text-xs text-gray-500 mt-1 space-y-1">
+                          {store.email && <div className="truncate">{store.email}</div>}
+                          {store.address && <div className="truncate xl:hidden">{store.address}</div>}
+                          {store.owner?.name && <div className="truncate lg:hidden">Owner: {store.owner.name}</div>}
+                        </div>
                       </div>
                     </div>
                   </td>
                   
-                  {/* Email Column */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{store.email || 'No email'}</div>
+                  {/* Email Column - Hidden on smaller screens */}
+                  <td className="hidden lg:table-cell px-3 md:px-6 py-4">
+                    <div className="text-sm text-gray-900 truncate max-w-xs">{store.email || 'No email'}</div>
                   </td>
                   
-                  {/* Address Column */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{store.address || 'No address'}</div>
+                  {/* Address Column - Hidden on smaller screens */}
+                  <td className="hidden xl:table-cell px-3 md:px-6 py-4">
+                    <div className="text-sm text-gray-900 truncate max-w-xs">{store.address || 'No address'}</div>
                   </td>
                   
-                  {/* Owner Column */}
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  {/* Owner Column - Hidden on smaller screens */}
+                  <td className="hidden lg:table-cell px-3 md:px-6 py-4">
                     <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold mr-2">
+                      <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold mr-2">
                         {store.owner?.name ? store.owner.name.split(' ').map(n => n[0]).join('') : 'UN'}
                       </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{store.owner?.name || 'Unknown Owner'}</div>
-                        <div className="text-sm text-gray-500">{store.owner?.email || 'No email'}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium text-gray-900 truncate">{store.owner?.name || 'Unknown Owner'}</div>
+                        <div className="text-xs text-gray-500 truncate">{store.owner?.email || 'No email'}</div>
                       </div>
                     </div>
                   </td>
                   
                   {/* Rating Column */}
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-3 md:px-6 py-4">
                     <div className="flex items-center">
-                      <div className="flex space-x-1 mr-2">
+                      <div className="flex space-x-1 mr-1 md:mr-2">
                         {renderStars(store.averageRating)}
                       </div>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-600 whitespace-nowrap">
                         {store.averageRating ? store.averageRating.toFixed(1) : 'N/A'}
                       </span>
                     </div>
                   </td>
                   
                   {/* Actions Column */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-3">
+                  <td className="px-3 md:px-6 py-4 text-sm font-medium">
+                    <div className="flex space-x-2">
                       <button
-                        className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50"
+                        className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50 transition-colors duration-200"
                         onClick={() => {
                           setSelectedStore(store);
                           setIsEditStoreModalOpen(true);
                         }}
                         title="Edit store"
                       >
-                        <PencilSquareIcon className="w-5 h-5" />
+                        <PencilSquareIcon className="w-4 h-4" />
                       </button>
                       <button
-                        className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
+                        className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50 transition-colors duration-200"
                         onClick={() => handleDeleteStore(store.id)}
                         title="Delete store"
                       >
-                        <TrashIcon className="w-5 h-5" />
+                        <TrashIcon className="w-4 h-4" />
                       </button>
                     </div>
                   </td> 
@@ -405,6 +412,7 @@ const AdminStores = () => {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Add Store Modal */}
