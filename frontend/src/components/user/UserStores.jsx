@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
 import StoreCard from './StoreCard';
 import RateStoreModal from './RateStoreModal';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, ChevronUpDownIcon, BuildingStorefrontIcon } from '@heroicons/react/24/outline';
 import { userAPI } from '../../utils/api';
 
 const UserStores = () => {
@@ -15,12 +14,13 @@ const UserStores = () => {
   const [selectedStore, setSelectedStore] = useState(null);
   const [isRateModalOpen, setIsRateModalOpen] = useState(false);
   const [existingRating, setExistingRating] = useState(null);
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
 
-  const { user } = useAuth();
-  const storesPerPage = 8;
+  const storesPerPage = 10; // Changed to 10 for table view
 
   // Fetch stores from API
-  const fetchStores = async () => {
+  const fetchStores = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -43,11 +43,11 @@ const UserStores = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, storesPerPage, searchTerm]);
 
   useEffect(() => {
     fetchStores();
-  }, [currentPage, storesPerPage, searchTerm]);
+  }, [fetchStores]);
 
   // Handle store rating
   const handleRateStore = (storeId) => {
@@ -105,10 +105,46 @@ const UserStores = () => {
     );
   };
 
+  // Sort stores
+  const getSortedStores = (storesToSort) => {
+    return [...storesToSort].sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case 'name':
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case 'address':
+          aValue = a.address.toLowerCase();
+          bValue = b.address.toLowerCase();
+          break;
+        case 'overallRating':
+          aValue = a.overallRating || 0;
+          bValue = b.overallRating || 0;
+          break;
+        case 'userRating':
+          aValue = a.userRating || 0;
+          bValue = b.userRating || 0;
+          break;
+        default:
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      } else {
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      }
+    });
+  };
+
   const filteredStores = getFilteredStores();
+  const sortedStores = getSortedStores(filteredStores);
 
   // Paginate stores
-  const paginatedStores = filteredStores.slice(
+  const paginatedStores = sortedStores.slice(
     (currentPage - 1) * storesPerPage,
     currentPage * storesPerPage
   );
@@ -116,7 +152,7 @@ const UserStores = () => {
   // Generate pagination controls
   const renderPagination = () => {
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(filteredStores.length / storesPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(sortedStores.length / storesPerPage); i++) {
       pageNumbers.push(i);
     }
 
@@ -207,35 +243,110 @@ const UserStores = () => {
         </div>
       ) : (
         <>
-          {/* Store Grid */}
+          {/* Store Table */}
           {paginatedStores.length === 0 ? (
-            <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-              <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                <MagnifyingGlassIcon className="w-8 h-8 text-gray-400" />
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="px-6 py-12 text-center text-gray-500">
+                <BuildingStorefrontIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <p className="text-lg font-medium text-gray-900 mb-1">No stores found</p>
+                <p className="text-sm text-gray-500">
+                  {searchTerm
+                    ? `No stores matching "${searchTerm}". Try a different search term.`
+                    : "There are no stores available at the moment."}
+                </p>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No stores found</h3>
-              <p className="text-gray-600">
-                {searchTerm
-                  ? `No stores matching "${searchTerm}". Try a different search term.`
-                  : "There are no stores available at the moment."}
-              </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {paginatedStores.map((store) => (
-                <StoreCard
-                  key={store.id}
-                  store={store}
-                  userRating={store.userRating}
-                  onRateStore={handleRateStore}
-                  onEditRating={handleEditRating}
-                />
-              ))}
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th 
+                      onClick={() => {
+                        if (sortBy === 'name') {
+                          setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                        } else {
+                          setSortBy('name');
+                          setSortOrder('asc');
+                        }
+                      }}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span>Store Name</span>
+                        <ChevronUpDownIcon className="w-4 h-4" />
+                      </div>
+                    </th>
+                    <th 
+                      onClick={() => {
+                        if (sortBy === 'address') {
+                          setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                        } else {
+                          setSortBy('address');
+                          setSortOrder('asc');
+                        }
+                      }}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span>Address</span>
+                        <ChevronUpDownIcon className="w-4 h-4" />
+                      </div>
+                    </th>
+                    <th 
+                      onClick={() => {
+                        if (sortBy === 'overallRating') {
+                          setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                        } else {
+                          setSortBy('overallRating');
+                          setSortOrder('asc');
+                        }
+                      }}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span>Overall Rating</span>
+                        <ChevronUpDownIcon className="w-4 h-4" />
+                      </div>
+                    </th>
+                    <th 
+                      onClick={() => {
+                        if (sortBy === 'userRating') {
+                          setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                        } else {
+                          setSortBy('userRating');
+                          setSortOrder('asc');
+                        }
+                      }}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span>Your Rating</span>
+                        <ChevronUpDownIcon className="w-4 h-4" />
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {paginatedStores.map((store) => (
+                    <StoreCard
+                      key={store.id}
+                      store={store}
+                      userRating={store.userRating}
+                      onRateStore={handleRateStore}
+                      onEditRating={handleEditRating}
+                    />
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
 
           {/* Pagination Controls */}
-          {filteredStores.length > storesPerPage && renderPagination()}
+          {sortedStores.length > storesPerPage && renderPagination()}
         </>
       )}
 

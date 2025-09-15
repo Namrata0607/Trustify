@@ -3,8 +3,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { 
   HomeIcon, 
-  BuildingStorefrontIcon, 
-  UserGroupIcon, 
+  StarIcon, 
   UserCircleIcon,
   ChatBubbleLeftRightIcon,
   ArrowRightOnRectangleIcon,
@@ -12,10 +11,10 @@ import {
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
 
-const AdminSidebar = ({ activeTab, setActiveTab, isMinimized, toggleSidebar }) => {
+const OwnerSidebar = ({ activeTab, setActiveTab, isMinimized, toggleSidebar }) => {
   const { user } = useContext(AuthContext) || {};
-  // Use user data instead of adminData, with fallback for when user is not yet loaded
-  const adminData = user || { name: 'Admin User', email: 'admin@example.com', role: 'ADMIN' };
+  // Use user data with fallback for when user is not yet loaded
+  const ownerData = user || { name: 'Store Owner', email: 'owner@example.com', role: 'STORE_OWNER' };
   
   const menuItems = [
     {
@@ -24,14 +23,9 @@ const AdminSidebar = ({ activeTab, setActiveTab, isMinimized, toggleSidebar }) =
       icon: <HomeIcon className="w-6 h-6" />
     },
     {
-      id: 'stores',
-      name: 'Stores',
-      icon: <BuildingStorefrontIcon className="w-6 h-6" />
-    },
-    {
-      id: 'users',
-      name: 'Users',
-      icon: <UserGroupIcon className="w-6 h-6" />
+      id: 'ratings',
+      name: 'Store Ratings',
+      icon: <StarIcon className="w-6 h-6" />
     },
     {
       id: 'profile',
@@ -46,7 +40,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, isMinimized, toggleSidebar }) =
     localStorage.removeItem('trustify_user');
     console.log('Logged out successfully');
     
-    // Redirect to login page (you can use react-router's navigate function here)
+    // Redirect to login page
     window.location.href = '/login';
   };
 
@@ -75,20 +69,20 @@ const AdminSidebar = ({ activeTab, setActiveTab, isMinimized, toggleSidebar }) =
 
       <div className="h-full flex flex-col justify-between">
         <div>
-          {/* Admin Profile Section */}
+          {/* Owner Profile Section */}
           <div className={`p-4 mb-6 border-b border-gray-100 ${isMinimized ? 'text-center' : ''}`}>
             <div className={`flex ${isMinimized ? 'justify-center' : 'items-center space-x-3'}`}>
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                {adminData.name ? adminData.name.split(' ').map(n => n[0]).join('') : 'A'}
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-400 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                {ownerData.name ? ownerData.name.split(' ').map(n => n[0]).join('') : 'O'}
               </div>
               {!isMinimized && (
                 <div className="overflow-hidden">
                   <h3 className="text-sm font-medium text-gray-900 truncate">
-                    {adminData.name || 'Admin User'}
+                    {ownerData.name || 'Store Owner'}
                   </h3>
-                  <p className="text-xs text-gray-500 truncate">{adminData.email || 'admin@example.com'}</p>
-                  <span className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs px-2 py-1 rounded-full mt-1">
-                    {adminData.role || 'ADMIN'}
+                  <p className="text-xs text-gray-500 truncate">{ownerData.email || 'owner@example.com'}</p>
+                  <span className="inline-block bg-gradient-to-br from-blue-500 to-purple-400 text-white text-xs px-2 py-1 rounded-full mt-1">
+                    STORE OWNER
                   </span>
                 </div>
               )}
@@ -143,4 +137,4 @@ const AdminSidebar = ({ activeTab, setActiveTab, isMinimized, toggleSidebar }) =
   );
 };
 
-export default AdminSidebar;
+export default OwnerSidebar;

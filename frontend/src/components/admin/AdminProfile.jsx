@@ -263,7 +263,7 @@ const AdminProfile = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
                   <input
-                    type="text"
+                    type="password"
                     value={passwordData.oldPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -273,7 +273,7 @@ const AdminProfile = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
                   <input
-                    type="text"
+                    type="password"
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -283,7 +283,7 @@ const AdminProfile = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
                   <input
-                    type="text"
+                    type="password"
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -298,7 +298,7 @@ const AdminProfile = () => {
                 </button>
               </div>
 
-              <div className="border-t pt-6">
+              {/* <div className="border-t pt-6">
                 <h4 className="text-md font-medium text-gray-900 mb-4">Two-Factor Authentication</h4>
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>
@@ -309,7 +309,7 @@ const AdminProfile = () => {
                     Enable 2FA
                   </button>
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../utils/api';
 
@@ -8,12 +8,33 @@ const Login = () => {
     email: '',
     password: ''
   });
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check for signup success message and remembered email
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccess(location.state.message);
+      if (location.state?.email) {
+        setFormData(prev => ({ ...prev, email: location.state.email }));
+      }
+      // Clear the state to prevent the message from persisting on refresh
+      window.history.replaceState({}, document.title);
+    }
+    
+    // Check for remembered email
+    const rememberedEmail = localStorage.getItem('trustify_remembered_email');
+    if (rememberedEmail) {
+      setFormData(prev => ({ ...prev, email: rememberedEmail }));
+      setRememberMe(true);
+    }
+  }, [location.state]);
 
   const handleChange = (e) => {
     setFormData({
@@ -48,8 +69,15 @@ const Login = () => {
       // Login successful
       setSuccess('Login successful! Redirecting...');
       
+      // Handle remember me functionality
+      if (rememberMe) {
+        localStorage.setItem('trustify_remembered_email', formData.email);
+      } else {
+        localStorage.removeItem('trustify_remembered_email');
+      }
+      
       // Store user data and token in context and localStorage
-      login(response.user, response.token);
+      login(response.user, response.token, rememberMe);
       
       // Redirect based on user role
       setTimeout(() => {
@@ -108,6 +136,13 @@ const Login = () => {
                     </svg>
                     <span>Secure authentication</span>
                   </div>
+                </div>
+                {/* Single Login System Note */}
+                <div className="mt-15 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-xs text-blue-800">
+                    <span className="font-medium">🔐 Single Login System:</span> All user types use the same login. 
+                    Your dashboard and features will be customized based on your account role.
+                  </p>
                 </div>
               </div>
             </div>
@@ -186,10 +221,12 @@ const Login = () => {
                         id="remember-me"
                         name="remember-me"
                         type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
                       <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                        Remember me
+                        Remember me for 30 days
                       </label>
                     </div>
                     <Link 
@@ -256,13 +293,7 @@ const Login = () => {
                   </div>
                 </div>
 
-                {/* Single Login System Note */}
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-xs text-blue-800">
-                    <span className="font-medium">🔐 Single Login System:</span> All user types use the same login. 
-                    Your dashboard and features will be customized based on your account role.
-                  </p>
-                </div>
+                
               </div>
             </div>
           </div>

@@ -44,6 +44,14 @@ export const apiRequest = async (endpoint, options = {}) => {
 
 // Authentication API functions
 export const authAPI = {
+  // Signup user
+  signup: async (name, email, password, address) => {
+    return apiRequest('/api/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, password, address })
+    });
+  },
+
   // Login user
   login: async (email, password) => {
     return apiRequest('/api/auth/login', {
@@ -173,6 +181,31 @@ export const userAPI = {
   },
   
   // Update user password
+  updatePassword: async (oldPassword, newPassword) => {
+    return apiRequest('/api/auth/update-password', {
+      method: 'PUT',
+      body: JSON.stringify({ oldPassword, newPassword })
+    });
+  }
+};
+
+// Store Owner API functions
+export const storeOwnerAPI = {
+  // Get store ratings for the owner's store
+  getStoreRatings: async () => {
+    return apiRequest('/api/store-owner/my-store/ratings', {
+      method: 'GET'
+    });
+  },
+
+  // Get average rating for the owner's store
+  getAverageRating: async () => {
+    return apiRequest('/api/store-owner/my-store/average-rating', {
+      method: 'GET'
+    });
+  },
+
+  // Update store owner password
   updatePassword: async (oldPassword, newPassword) => {
     return apiRequest('/api/auth/update-password', {
       method: 'PUT',

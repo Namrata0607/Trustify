@@ -23,25 +23,45 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const savedToken = localStorage.getItem('trustify_token');
     const savedUser = localStorage.getItem('trustify_user');
+    const savedExpiration = localStorage.getItem('trustify_token_expiration');
     
-    if (savedToken && savedUser) {
+    if (savedToken && savedUser && savedExpiration) {
       try {
-        setToken(savedToken);
-        setUser(JSON.parse(savedUser));
+        const expirationTime = parseInt(savedExpiration);
+        const currentTime = Date.now();
+        
+        // Check if token is still valid
+        if (currentTime < expirationTime) {
+          setToken(savedToken);
+          setUser(JSON.parse(savedUser));
+        } else {
+          // Token expired, clear everything
+          localStorage.removeItem('trustify_token');
+          localStorage.removeItem('trustify_user');
+          localStorage.removeItem('trustify_token_expiration');
+        }
       } catch (error) {
         console.error('Error parsing saved user data:', error);
         localStorage.removeItem('trustify_token');
         localStorage.removeItem('trustify_user');
+        localStorage.removeItem('trustify_token_expiration');
       }
     }
     setLoading(false);
   }, []);
 
-  const login = (userData, authToken) => {
+  const login = (userData, authToken, rememberMe = false) => {
     setUser(userData);
     setToken(authToken);
     localStorage.setItem('trustify_token', authToken);
     localStorage.setItem('trustify_user', JSON.stringify(userData));
+    
+    // Set expiration based on remember me
+    const expirationTime = rememberMe 
+      ? Date.now() + (30 * 24 * 60 * 60 * 1000) // 30 days
+      : Date.now() + (2 * 60 * 60 * 1000); // 2 hours (default)
+    
+    localStorage.setItem('trustify_token_expiration', expirationTime.toString());
   };
 
   const logout = () => {
@@ -49,6 +69,9 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('trustify_token');
     localStorage.removeItem('trustify_user');
+    localStorage.removeItem('trustify_token_expiration');
+    // Note: We don't remove remembered email on manual logout
+    // as users might want to keep their email remembered
   };
 
   const isAuthenticated = () => {

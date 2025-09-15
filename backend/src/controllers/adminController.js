@@ -165,13 +165,28 @@ export const getDashboardStats = async (req, res, next) => {
 export const getStoresList = async (req, res, next) => {
   try {
     const { name, email, address } = req.query;
+    
+    // Extract pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Define filter criteria
+    const filterCriteria = {
+      name: name ? { contains: name, mode: "insensitive" } : undefined,
+      email: email ? { contains: email, mode: "insensitive" } : undefined,
+      address: address ? { contains: address, mode: "insensitive" } : undefined,
+    };
+
+    // Get total count for pagination
+    const totalStores = await prisma.store.count({
+      where: filterCriteria
+    });
 
     const stores = await prisma.store.findMany({
-      where: {
-        name: name ? { contains: name, mode: "insensitive" } : undefined,
-        email: email ? { contains: email, mode: "insensitive" } : undefined,
-        address: address ? { contains: address, mode: "insensitive" } : undefined,
-      },
+      where: filterCriteria,
+      skip: skip,
+      take: limit,
       include: {
         owner: { select: { id: true, name: true, email: true, role: true } },
         ratings: true,
@@ -192,7 +207,16 @@ export const getStoresList = async (req, res, next) => {
       owner: store.owner,
     }));
 
-    res.json(storesWithRatings);
+    // Send response with pagination metadata
+    res.json({
+      stores: storesWithRatings,
+      pagination: {
+        total: totalStores,
+        page: page,
+        limit: limit,
+        pages: Math.ceil(totalStores / limit)
+      }
+    });
   } catch (error) {
     next(error);
   }
@@ -202,21 +226,36 @@ export const getStoresList = async (req, res, next) => {
 export const getUsersList = async (req, res, next) => {
   try {
     const { name, email, address, role } = req.query;
-
-    const users = await prisma.user.findMany({
-      where: {
+    
+    // Extract pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Define filter criteria
+    const filterCriteria = {
       name: name ? { contains: name, mode: "insensitive" } : undefined,
       email: email ? { contains: email, mode: "insensitive" } : undefined,
       address: address ? { contains: address, mode: "insensitive" } : undefined,
       role: role ? role.toUpperCase() : undefined,
-      },
+    };
+
+    // Get total count for pagination
+    const totalUsers = await prisma.user.count({
+      where: filterCriteria
+    });
+
+    const users = await prisma.user.findMany({
+      where: filterCriteria,
+      skip: skip,
+      take: limit,
       include: {
-      stores: {
-        include: {
-        ratings: true,
+        stores: {
+          include: {
+            ratings: true,
+          },
         },
-      },
-      ratings: true,
+        ratings: true,
       },
     });
 
@@ -224,15 +263,24 @@ export const getUsersList = async (req, res, next) => {
     const usersWithStoreRatings = users.map(user => ({
       ...user,
       stores: user.stores.map(store => ({
-      ...store,
-      averageRating:
-        store.ratings.length > 0
-        ? Math.round((store.ratings.reduce((a, r) => a + r.rating, 0) / store.ratings.length) * 10) / 10
-        : null,
+        ...store,
+        averageRating:
+          store.ratings.length > 0
+            ? Math.round((store.ratings.reduce((a, r) => a + r.rating, 0) / store.ratings.length) * 10) / 10
+            : null,
       })),
     }));
 
-    res.json(usersWithStoreRatings);
+    // Send response with pagination metadata
+    res.json({
+      users: usersWithStoreRatings,
+      pagination: {
+        total: totalUsers,
+        page: page,
+        limit: limit,
+        pages: Math.ceil(totalUsers / limit)
+      }
+    });
   } catch (error) {
     next(error);
   }
