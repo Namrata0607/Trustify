@@ -21,11 +21,15 @@ const AdminStores = () => {
     try {
       setLoading(true);
       setError('');
+      console.log('Fetching stores...');
       const data = await adminAPI.getStores();
-      setStores(data);
+      console.log('Stores API response:', data);
+      // API returns { stores: [...], pagination: {...} }
+      setStores(data.stores || []);
+      console.log('Stores set:', data.stores || []);
     } catch (err) {
+      console.error('Error in fetchStores:', err);
       setError('Failed to fetch stores: ' + err.message);
-      console.error('Error fetching stores:', err);
     } finally {
       setLoading(false);
     }
@@ -57,14 +61,14 @@ const AdminStores = () => {
   };
 
   // Filter and sort stores
-  const filteredAndSortedStores = stores
+  const filteredAndSortedStores = (Array.isArray(stores) ? stores : [])
     .filter(store => {
       const searchLower = searchTerm.toLowerCase();
       return (
-        store.name.toLowerCase().includes(searchLower) ||
-        store.email.toLowerCase().includes(searchLower) ||
-        store.address.toLowerCase().includes(searchLower) ||
-        store.owner.name.toLowerCase().includes(searchLower)
+        (store.name || '').toLowerCase().includes(searchLower) ||
+        (store.email || '').toLowerCase().includes(searchLower) ||
+        (store.address || '').toLowerCase().includes(searchLower) ||
+        (store.owner?.name || '').toLowerCase().includes(searchLower)
       );
     })
     .sort((a, b) => {
@@ -72,28 +76,28 @@ const AdminStores = () => {
       
       switch (sortBy) {
         case 'name':
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
+          aValue = (a.name || '').toLowerCase();
+          bValue = (b.name || '').toLowerCase();
           break;
         case 'rating':
           aValue = a.averageRating || 0;
           bValue = b.averageRating || 0;
           break;
         case 'owner':
-          aValue = a.owner.name.toLowerCase();
-          bValue = b.owner.name.toLowerCase();
+          aValue = (a.owner?.name || '').toLowerCase();
+          bValue = (b.owner?.name || '').toLowerCase();
           break;
         case 'email':
-          aValue = a.email.toLowerCase();
-          bValue = b.email.toLowerCase();
+          aValue = (a.email || '').toLowerCase();
+          bValue = (b.email || '').toLowerCase();
           break;
         case 'address':
-          aValue = a.address.toLowerCase();
-          bValue = b.address.toLowerCase();
+          aValue = (a.address || '').toLowerCase();
+          bValue = (b.address || '').toLowerCase();
           break;
         default:
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
+          aValue = (a.name || '').toLowerCase();
+          bValue = (b.name || '').toLowerCase();
       }
 
       if (sortOrder === 'asc') {
@@ -127,7 +131,7 @@ const AdminStores = () => {
   };
 
   // Calculate average rating
-  const averageRating = stores.length > 0 
+  const averageRating = (Array.isArray(stores) && stores.length > 0) 
     ? (stores.reduce((sum, store) => sum + (store.averageRating || 0), 0) / stores.length).toFixed(1)
     : '0.0';
 
@@ -136,6 +140,23 @@ const AdminStores = () => {
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         <span className="ml-3 text-gray-600">Loading stores...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="text-red-500 text-lg font-semibold mb-2">Error Loading Stores</div>
+          <div className="text-gray-600 mb-4">{error}</div>
+          <button 
+            onClick={fetchStores}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }
@@ -313,10 +334,10 @@ const AdminStores = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold mr-3">
-                        {store.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                        {store.name ? store.name.split(' ').map(n => n[0]).join('').slice(0, 2) : 'ST'}
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{store.name}</div>
+                        <div className="text-sm font-medium text-gray-900">{store.name || 'Unknown Store'}</div>
                         <div className="text-sm text-gray-500">Store ID: {store.id}</div>
                       </div>
                     </div>
@@ -324,23 +345,23 @@ const AdminStores = () => {
                   
                   {/* Email Column */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{store.email}</div>
+                    <div className="text-sm text-gray-900">{store.email || 'No email'}</div>
                   </td>
                   
                   {/* Address Column */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{store.address}</div>
+                    <div className="text-sm text-gray-900">{store.address || 'No address'}</div>
                   </td>
                   
                   {/* Owner Column */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold mr-2">
-                        {store.owner.name.split(' ').map(n => n[0]).join('')}
+                        {store.owner?.name ? store.owner.name.split(' ').map(n => n[0]).join('') : 'UN'}
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{store.owner.name}</div>
-                        <div className="text-sm text-gray-500">{store.owner.email}</div>
+                        <div className="text-sm font-medium text-gray-900">{store.owner?.name || 'Unknown Owner'}</div>
+                        <div className="text-sm text-gray-500">{store.owner?.email || 'No email'}</div>
                       </div>
                     </div>
                   </td>
