@@ -14,7 +14,7 @@ const Navbar = () => {
         {/* Desktop Layout */}
         <div className="hidden md:flex justify-between items-center h-16">
           {/* Left side - About and Contact (Desktop) */}
-          <div className="flex space-x-8">
+          {/* <div className="flex space-x-8">
             <Link 
               to="/about" 
               className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200 hover:bg-gray-50 rounded-md"
@@ -27,7 +27,7 @@ const Navbar = () => {
             >
               Contact
             </Link>
-          </div>
+          </div> */}
 
           {/* Center - TRUSTIFY Logo with Animation (Desktop) */}
           <div className="absolute left-1/2 transform -translate-x-1/2">
