@@ -1,295 +1,232 @@
-# 🌟 Trustify - Transparent Store Rating Platform
+# Trustify - Transparent Store Rating Platform
 
-<div align="center">
-  <img src="https://img.shields.io/badge/React-18+-blue" alt="React Version">
-  <img src="https://img.shields.io/badge/Node.js-18+-green" alt="Node.js Version">
-  <img src="https://img.shields.io/badge/Database-PostgreSQL-blue" alt="Database">
-  <img src="https://img.shields.io/badge/ORM-Prisma-purple" alt="Prisma ORM">
-  <img src="https://img.shields.io/badge/Styling-TailwindCSS-cyan" alt="Tailwind CSS">
-</div>
+Trustify is a modern web application for rating and reviewing stores with transparent user feedback. It features a robust admin dashboard, user management, store owner management, and a responsive, mobile-friendly UI. Built with React (Vite), Node.js/Express, Prisma ORM, and PostgreSQL (NeonDB).
 
-## 🌐 Live Demo
+Trustify is hosted on https://trustify-mocha.vercel.app
 
-<div align="center">
-  <h3>
-    <a href="https://trustify-mocha.vercel.app" target="_blank">
-      🚀 Visit Live Application: https://trustify-mocha.vercel.app
-    </a>
-  </h3>
-  <p><em>Experience Trustify in action! Click the link above to explore our platform.</em></p>
-</div>
-
-## 🚨 Important Notice
-
-> **⚠️ Backend Hosting Information**  
-> Our backend is hosted on **Render's free tier**, which may take a moment to start up from sleep mode. Please be patient during initial loading - the first request might take 30-60 seconds to respond.
-
-## 🔐 Admin Credentials
-
-For testing and demonstration purposes:
+## Project Structure
 
 ```
-Email: admin@trustify.com
-Password: Trustify@1000
-```
----
-
-## 🌟 Overview
-
-**Trustify** is a revolutionary transparent store rating platform that connects three key stakeholders in a secure, trust-building ecosystem:
-
-- **👥 Users** - Share authentic reviews and ratings
-- **🏪 Store Owners** - Manage their business reputation and customer feedback
-- **🛡️ Administrators** - Ensure platform integrity and moderate content
-
-Our platform eliminates fake reviews while promoting genuine customer experiences, creating a community where every rating matters and trust is built through transparency.
-
----
-
-## ✨ Features
-
-### 🔹 **For Users**
-- ✅ Browse and search verified stores
-- ✅ Submit authentic ratings and reviews
-- ✅ View personal rating history
-- ✅ Secure user profile management
-- ✅ Advanced search and filtering
-
-### 🔹 **For Store Owners**
-- ✅ Comprehensive business dashboard
-- ✅ Real-time rating analytics
-- ✅ Customer feedback management
-- ✅ Profile and business information updates
-- ✅ Rating trend analysis
-
-### 🔹 **For Administrators**
-- ✅ Complete platform oversight
-- ✅ User and store management
-- ✅ Content moderation tools
-- ✅ Analytics and reporting
-- ✅ System configuration
-
-### 🔹 **Core Platform Features**
-- 🔒 **Secure Authentication** - JWT-based with role-based access control
-- 📱 **Responsive Design** - Mobile-first approach with Tailwind CSS
-- 🔍 **Advanced Search** - Intelligent filtering and pagination
-- 📊 **Real-time Analytics** - Live dashboards and statistics
-- 🛡️ **Data Security** - Encrypted data storage and transmission
-- ⚡ **Performance Optimized** - Fast loading and efficient queries
-
----
-
-## 🛠️ Technology Stack
-
-### **Frontend**
-- **React 18+** - Modern UI library with hooks
-- **Vite** - Lightning-fast build tool
-- **React Router DOM** - Client-side routing
-- **Tailwind CSS** - Utility-first CSS framework
-- **Heroicons** - Beautiful SVG icons
-- **React Icons** - Comprehensive icon library
-
-### **Backend**
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web application framework
-- **Prisma ORM** - Type-safe database toolkit
-- **PostgreSQL** - Robust relational database
-- **JWT** - JSON Web Token authentication
-- **bcryptjs** - Password hashing
-- **Zod** - TypeScript-first schema validation
-
-### **Development & Deployment**
-- **Git** - Version control
-- **Render** - Cloud deployment platform
-- **Vercel** - Frontend hosting platform
-
----
-
-## 🏗️ Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │    Backend      │    │   Database      │
-│   (React)       │◄──►│   (Express)     │◄──►│ (PostgreSQL)    │
-│                 │    │                 │    │                 │
-│ • Components    │    │ • REST APIs     │    │ • Users         │
-│ • Pages         │    │ • AuthMiddleware│    │ • Stores        │
-│ • Context       │    │ • Controllers   │    │ • Ratings       │
-│ • Utils         │    │ • Validators    │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+Trustify/
+├── frontend/              # Frontend (React + Vite)
+│   ├── public/            # Static assets
+│   ├── src/               # Source code
+│   │   ├── components/    # Reusable components
+│   │   │   ├── admin/     # Admin dashboard components
+│   │   │   ├── owner/      # Store owner dashboard components
+│   │   │   ├── user/      # User dashboard components
+│   │   │   ├── Footer.jsx # Footer component
+│   │   │   ├── Navbar.jsx # Navigation component
+│   │   │   └── AutocompleteInput.jsx
+│   │   ├── pages/         # Main pages
+│   │   │   ├── Home.jsx   # Landing page
+│   │   │   ├── Login.jsx  # Authentication
+│   │   │   ├── Signup.jsx # User registration
+│   │   │   ├── AdminModule.jsx    # Admin dashboard
+│   │   │   ├── UserModule.jsx     # User dashboard
+│   │   │   └── OwnerModule.jsx    # Store owner dashboard
+│   │   ├── context/       # React context providers
+│   │   │   └── AuthContext.jsx
+│   │   ├── layouts/       # Layout components
+│   │   │   └── UserLayout.jsx
+│   │   ├── utils/         # Utility functions
+│   │   │   └── api.js     # API helpers
+│   │   └── assets/        # Images, SVGs
+│   ├── index.html         # Main HTML file
+│   ├── package.json       # Frontend dependencies
+│   ├── vite.config.js     # Vite configuration
+│   └── vercel.json        # Vercel deployment config
+│
+├── backend/               # Backend (Node.js + Express)
+│   ├── src/               # Source code
+│   │   ├── controllers/   # Route controllers
+│   │   │   ├── authController.js      # Authentication logic
+│   │   │   ├── userController.js      # User management
+│   │   │   ├── adminController.js     # Admin operations
+│   │   │   └── storeOwnerController.js # Store owner operations
+│   │   ├── middleware/    # Express middlewares
+│   │   │   ├── authMiddleware.js      # JWT authentication
+│   │   │   ├── errorHandler.js        # Error handling
+│   │   │   └── validateInput.js       # Input validation
+│   │   ├── routes/        # API route definitions
+│   │   │   ├── authRoutes.js          # Auth endpoints
+│   │   │   ├── userRoutes.js          # User endpoints
+│   │   │   ├── adminRoutes.js         # Admin endpoints
+│   │   │   ├── storeOwnerRoutes.js    # Store owner endpoints
+│   │   │   └── ratingRoutes.js        # Rating endpoints
+│   │   ├── config/        # Configuration files
+│   │   │   └── db.js      # Database configuration
+│   │   ├── utils/         # Utility functions
+│   │   │   └── jwtHelper.js
+│   │   ├── app.js         # Express app setup
+│   │   └── server.js      # Server entry point
+│   ├── prisma/            # Prisma ORM
+│   │   ├── schema.prisma  # Database schema
+│   │   └── seed.js        # Database seeding
+│   ├── package.json       # Backend dependencies
+│   └── .env               # Environment variables
+│
+├── README.md              # Project documentation
+└── .gitignore             # Git ignore rules
 ```
 
-### **Key Design Patterns**
-- **Component-Based Architecture** - Reusable UI components
-- **Context API** - Global state management
-- **RESTful API Design** - Standard HTTP methods and status codes
-- **Role-Based Access Control** - Secure route protection
+## Features
+
+### Core Features
+- **Multi-role Authentication** - Users, Store Owners, and Admins
+- **Store Rating System** - Transparent ratings and reviews
+- **Admin Dashboard** - Complete platform management
+- **Store Owner Dashboard** - Business analytics and management
+- **User Dashboard** - Personal ratings and store browsing
 - **Responsive Design** - Mobile-first approach
+- **Real-time Updates** - Dynamic content updates
+- **Advanced Search** - Store filtering and pagination
+- **Profile Management** - User and store owner profiles
 
----
+### User Features
+- Browse and search verified stores
+- Submit authentic ratings and reviews
+- View personal rating history
+- Secure profile management
+- Advanced filtering options
 
-## 👥 User Roles
+### Store Owner Features  
+- Comprehensive business dashboard
+- Real-time rating analytics
+- Customer feedback management
+- Business profile updates
+- Rating trend analysis
 
-### 🛡️ **Administrator (ADMIN)**
-- Complete platform control
+### Admin Features
+- Complete platform oversight
 - User and store management
-- Content moderation
-- System analytics
-- Platform configuration
+- Content moderation tools
+- Analytics and reporting
+- System configuration
 
-### 🏪 **Store Owner (STORE_OWNER)**
-- Business dashboard access
-- Customer rating insights
-- Profile management
-- Response to reviews
-- Business analytics
+## Getting Started
 
-### 👤 **Normal User (USER)**
-- Store browsing and search
-- Rating and review submission
-- Personal profile management
-- Rating history tracking
-- Wishlist management
+### Prerequisites
+- Node.js (v18+)
+- npm
+- PostgreSQL (NeonDB recommended)
 
----
+### Setup
 
-## 🚀 Getting Started
-
-### **Prerequisites**
-- Node.js 18+ installed
-- PostgreSQL database
-- Git for version control
-
-### **Installation**
-
-1. **Clone the repository**
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/Namrata0607/Trustify.git
    cd Trustify
    ```
 
-2. **Backend Setup**
+2. **Install dependencies:**
+   ```bash
+   # Backend
+   cd backend && npm install
+   
+   # Frontend  
+   cd ../frontend && npm install
+   ```
+
+3. **Configure environment variables:**
+
+  **Backend (`.env`):**
+  ```env
+  DATABASE_URL="postgresql://neondb_owner:<password>@<neon-host>/<db-name>?sslmode=require"
+  JWT_SECRET="your_jwt_secret_here"
+  ```
+
+  **Frontend (`.env`):**
+  ```env
+  VITE_API_BASE_URL=http://localhost:3000  # Set this to your backend base URL
+  ```
+
+
+4. **Database setup:**
    ```bash
    cd backend
-   npm install
-   
-   # Configure environment variables
-   cp .env.example .env
-   # Edit .env with your database credentials
-   
-   # Database setup
    npx prisma generate
    npx prisma migrate dev
    npx prisma db seed
-   
-   # Start development server
-   npm run dev
    ```
 
-3. **Frontend Setup**
+5. **Run the application:**
    ```bash
-   cd ../frontend
-   npm install
-   
-   # Start development server
-   npm run dev
-   ```
-
-4. **Access the Application**
-   - Frontend: `http://localhost:5173`
-   - Backend API: `http://localhost:3000`
-
-### **Environment Variables Setup**
-
-**Backend (.env)**
-```env
-# Database Configuration
-DATABASE_URL="postgresql://neondb_owner:npg_q4uVdxrYgKh8@ep-snowy-king-adl62mbh-pooler.c-2.us-east-1.aws.neon.tech/trustify_db?sslmode=require"
-
-# JWT Configuration
-JWT_SECRET="supersecretkey123"
-
-```
-
-**Frontend (.env)**
-```env
-# API Configuration
-VITE_API_BASE_URL=https://trustify-r0jd.onrender.com
-
-```
-
-**🔒 Security Best Practices:**
-- ✅ Never commit `.env` files to version control (already in `.gitignore`)
-- ✅ Use different secrets for development and production environments
-- ✅ Keep JWT secrets at least 32 characters long for security
-- ✅ Use environment-specific database URLs
-- ✅ Store production secrets securely in hosting platforms
-
-**🛠️ Environment Setup Steps:**
-
-1. **Backend Environment**
-   ```bash
+   # Backend (Terminal 1)
    cd backend
-   cp .env.example .env  # Copy template
-   # Edit .env file with your actual database credentials
-   ```
-
-2. **Frontend Environment**
-   ```bash
+   npm run dev
+   
+   # Frontend (Terminal 2) 
    cd frontend
-   cp .env.example .env  # Copy template
-   # Edit .env file with your API URL
+   npm run dev
    ```
 
-3. **Production Environment**
-   - Set environment variables in your hosting platform (Render, Vercel, etc.)
-   - Use secure, randomly generated JWT secrets
-   - Configure production database URLs
+6. **Access the app:**
+   - Local: http://localhost:5173
+   - Live: https://trustify-mocha.vercel.app
 
----
+## Admin Credentials
 
-## 🌐 Deployment
+**Email:** admin@trustify.com  
+**Password:** Trustify@1000
 
-### **Backend Deployment (Render)**
-1. Connect GitHub repository to Render
-2. Set environment variables in Render dashboard
-3. Configure build and start commands
-4. Deploy and monitor logs
+## Sample User Credentials
 
-### **Frontend Deployment (Vercel)**
-1. Connect repository to Vercel
-2. Configure build settings
-3. Set environment variables
-4. Deploy automatically on push
+**Email:** aayushdaphale@gmail.com  
+**Password:** A@yush1234
 
-**🌐 Live Production Deployment:**
-- **URL**: https://trustify-mocha.vercel.app
-- **Status**: ✅ Active and Running
-- **Auto-deploy**: Enabled on main branch updates
+## API Endpoints
 
-### **Database Hosting**
-- **Production**: PostgreSQL hosted on [Neon](https://neon.tech)
-- **Development**: PostgreSQL instance on Neon
+- `POST /api/auth/signup` - Register new user
+- `POST /api/auth/login` - Login user/ Admin / Store onwer
+- `PUT /api/auth/update-password` - Update password
 
----
+### Admin 
+- `POST /api/admin/add-users` - Create new user
+- `POST /api/admin/add-stores` - Create new store  
+- `GET /api/admin/dashboard` - Dashboard analytics and stats
+- `GET /api/admin/stores` - Get all stores with filters
+- `GET /api/admin/users` - Get all users with filters
+- `PUT /api/admin/stores/:storeId` - Update store details
+- `DELETE /api/admin/stores/:storeId` - Delete store
+- `DELETE /api/admin/users/:userId` - Delete user
 
-## 🎯 Future Enhancements
+### User
+- `GET /api/users/stores` - Get all stores
+- `POST /api/users/stores/rate` - Submit or update rating for store
+- `GET /api/users/my-ratings` - Get current user's ratings history
+- `DELETE /api/users/stores/rate` - Delete a rating
 
-- [ ] **Real-time Notifications** - WebSocket implementation
-- [ ] **Advanced Analytics** - Detailed insights and reports
-- [ ] **Mobile App** - React Native application
-- [ ] **API Rate Limiting** - Prevent abuse and ensure fair usage
-- [ ] **Email Verification** - Account verification system
-- [ ] **Social Authentication** - Google/Facebook login
-- [ ] **Multi-language Support** - Internationalization
-- [ ] **Advanced Search Filters** - Location-based, category-wise
-- [ ] **Review Moderation** - AI-powered content filtering
-- [ ] **Business Verification** - Verified business badges
----
+### Store Owner
+- `GET /api/store-owners/my-store/ratings` - Get ratings for owner's store
+- `GET /api/store-owners/my-store/average-rating` - Get average rating for owner's store
 
-## 🙏 Thank You
+## Tech Stack
 
-Thank you for your interest in Trustify!  
-We appreciate your support and feedback.  
+### Frontend
+- **React 18+** - UI library with hooks
+- **Vite** - Build tool and dev server
+- **React Router DOM** - Client-side routing  
+- **Tailwind CSS** - Utility-first CSS framework
+- **Heroicons** - SVG icon library
 
----
+### Backend  
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **Prisma ORM** - Database toolkit
+- **PostgreSQL** - Relational database
+- **JWT** - Authentication tokens
+- **bcryptjs** - Password hashing
+
+### Deployment
+- **Frontend:** Vercel
+- **Backend:** Render  
+- **Database:** NeonDB (PostgreSQL)
+
+## Contact
+
+**Developer:** Namrata Daphale  
+**Email:** namratadaphale07@gmail.com  
+**GitHub:** [Namrata0607](https://github.com/Namrata0607)
+
+For support or questions, feel free to reach out!
