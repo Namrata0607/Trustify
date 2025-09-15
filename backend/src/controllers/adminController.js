@@ -25,6 +25,18 @@ const createStoreSchema = z.object({
   ownerPassword: z.string().min(8).max(16).optional(),
 });
 
+const updateUserSchema = z.object({
+  name: z.string().min(2).max(60).optional(),
+  email: z.string().email().optional(),
+  password: z.string()
+    .min(8)
+    .max(16)
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character")
+    .optional(),
+  address: z.string().max(400).optional(),
+});
+
 // ================== Add Normal User ==================
 export const createUser = async (req, res, next) => {
   try {
@@ -321,6 +333,67 @@ export const deleteUser = async (req, res, next) => {
     next(err);
   }
 };
+
+// ================== Update user ==================
+export const updateUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const data = validateInput(updateUserSchema, req.body);
+
+    // Check if user exists
+    const existingUser = await prisma.user.findUnique({ 
+      where: { id: parseInt(userId) } 
+    });
+    
+    if (!existingUser) {
+      res.status(404);
+      throw new Error("User not found");
+    }
+
+    // Check if email is being updated and if it's already taken by another user
+    if (data.email && data.email !== existingUser.email) {
+      const emailExists = await prisma.user.findUnique({ 
+        where: { email: data.email } 
+      });
+      if (emailExists) {
+        res.status(400);
+        throw new Error("Email already exists");
+      }
+    }
+
+    // Prepare update data
+    const updateData = {};
+    if (data.name) updateData.name = data.name;
+    if (data.email) updateData.email = data.email;
+    if (data.address !== undefined) updateData.address = data.address;
+    
+    // Hash password if provided
+    if (data.password) {
+      updateData.password = await bcrypt.hash(data.password, 10);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: parseInt(userId) },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        address: true,
+        role: true,
+        createdAt: true
+      }
+    });
+
+    res.json({ 
+      message: "User updated successfully",
+      user: updatedUser 
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 // ================== Update store ==================
 export const updateStore = async (req, res, next) => {

@@ -7,6 +7,7 @@ import {
   getStoresList,
   getUsersList,
   deleteUser,
+  updateUser,
   updateStore,
   deleteStore,
 } from "../controllers/adminController.js";
@@ -37,12 +38,15 @@ router.get("/stores", getStoresList);
 router.get("/users", getUsersList);
 
 // Delete user
-router.delete("/users/:userId", authMiddleware, isAdmin, deleteUser);
+router.delete("/users/:userId", deleteUser);
+
+// Update user details
+router.put("/users/:userId", updateUser);
 
 // Update store details
-router.put("/stores/:storeId", authMiddleware, isAdmin, updateStore);
+router.put("/stores/:storeId", updateStore);
 
 // Delete store
-router.delete("/stores/:storeId", authMiddleware, isAdmin, deleteStore);
+router.delete("/stores/:storeId", deleteStore);
 
 export default router;
