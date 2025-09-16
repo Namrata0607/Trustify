@@ -173,7 +173,7 @@ const AdminUsers = () => {
     };
 
     return (
-      <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[role]}`}>
+      <span className={`px-1 py-1 text-xs font-medium rounded-full text-center ${styles[role]}`}>
         {labels[role]}
       </span>
     );
@@ -264,103 +264,112 @@ const AdminUsers = () => {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                {[
-                  { key: 'name', label: 'Name' },
-                  { key: 'email', label: 'Email' },
-                  { key: 'address', label: 'Address' },
-                  { key: 'role', label: 'Role' },
-                  { key: 'rating', label: 'Rating' },
-                  { key: 'actions', label: 'Actions' }
-                ].map((column) => (
-                  <th
-                    key={column.key}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {column.key !== 'actions' ? (
-                      <button
-                        onClick={() => handleSort(column.key)}
-                        className="flex items-center space-x-1 hover:text-gray-900"
-                      >
-                        <span>{column.label}</span>
-                        <ArrowsUpDownIcon className="w-4 h-4" />
-                      </button>
-                    ) : (
-                      column.label
-                    )}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredAndSortedUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold mr-3">
-                        {user.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                        <div className="text-sm text-gray-500">Joined: {user.createdAt}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.address}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex flex-col space-y-1">
-                      {getRoleBadge(user.role)}
-                      {user.role === 'STORE_OWNER' && (
-                        <span className="text-xs text-gray-500">{user.stores?.length || 0} stores</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {user.role === 'STORE_OWNER' && user.stores && user.stores.length > 0 ? (
-                      <div className="flex items-center">
-                        <span className="text-sm font-medium text-gray-900">
-                          {(user.stores.reduce((sum, store) => sum + (store.averageRating || 0), 0) / user.stores.length).toFixed(1)}
-                        </span>
-                        <span className="text-xs text-gray-500 ml-1">
-                          ({user.stores.length} {user.stores.length === 1 ? 'store' : 'stores'})
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">N/A</span>
-                    )}
-                  </td>
-                   {user.role !== 'ADMIN' && (
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-3">
-                        <button
-                          onClick={() => handleEditUser(user)}
-                          className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50"
-                          title="Edit user"
-                        >
-                          <PencilSquareIcon className="w-5 h-5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
-                          title="Delete user"
-                        >
-                          <TrashIcon className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </td>)}
-                </tr>
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              {[
+            { key: 'name', label: 'Name' },
+            { key: 'email', label: 'Email' },
+            { key: 'address', label: 'Address' },
+            { key: 'role', label: 'Role' },
+            { key: 'rating', label: 'Rating' },
+            { key: 'actions', label: 'Actions' }
+              ].map((column) => (
+            <th
+              key={column.key}
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              {column.key !== 'actions' ? (
+                <button
+              onClick={() => handleSort(column.key)}
+              className="flex items-center space-x-1 hover:text-gray-900"
+                >
+              <span>{column.label}</span>
+              <ArrowsUpDownIcon className="w-4 h-4" />
+                </button>
+              ) : (
+                column.label
+              )}
+            </th>
               ))}
-            </tbody>
-          </table>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredAndSortedUsers.map((user) => (
+              <tr key={user.id} className="hover:bg-gray-50">
+            <td className="px-6 py-4 whitespace-nowrap">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold mr-3">
+              {user.name.split(' ').map(n => n[0]).join('')}
+                </div>
+                <div>
+              <div className="text-sm font-medium text-gray-900">{user.name}</div>
+              <div className="text-sm text-gray-500">
+                Joined: {new Date(user.createdAt).toLocaleString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true
+                })}
+              </div>
+                </div>
+              </div>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.address}</td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              <div className="flex flex-col space-y-1">
+                {getRoleBadge(user.role)}
+                {user.role === 'STORE_OWNER' && (
+              <span className="text-xs text-gray-500">{user.stores?.length || 0} stores</span>
+                )}
+              </div>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              {user.role === 'STORE_OWNER' && user.stores && user.stores.length > 0 ? (
+                <div className="flex items-center">
+              <span className="text-sm font-medium text-gray-900">
+                {(user.stores.reduce((sum, store) => sum + (store.averageRating || 0), 0) / user.stores.length).toFixed(1)}
+              </span>
+              <span className="text-xs text-gray-500 ml-1">
+                ({user.stores.length} {user.stores.length === 1 ? 'store' : 'stores'})
+              </span>
+                </div>
+              ) : (
+                <span className="text-gray-400">N/A</span>
+              )}
+            </td>
+             {user.role !== 'ADMIN' && (
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div className="flex space-x-3">
+              <button
+                onClick={() => handleEditUser(user)}
+                className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50"
+                title="Edit user"
+              >
+                <PencilSquareIcon className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => handleDeleteUser(user.id)}
+                className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
+                title="Delete user"
+              >
+                <TrashIcon className="w-5 h-5" />
+              </button>
+                </div>
+              </td>)}
+              </tr>
+            ))}
+          </tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
-      {/* Add/Edit User Modal */}
+        {/* Add/Edit User Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50  flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">

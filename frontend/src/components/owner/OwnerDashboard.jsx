@@ -157,9 +157,9 @@ const OwnerDashboard = () => {
 
         <div className="p-6">
           {storeData?.ratings && storeData.ratings.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-2">
               {storeData.ratings.slice(0, 5).map((rating, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div key={index} className="border-b border-gray-200 flex items-center justify-between p-4 bg-gray-50">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                       {rating.userName.split(' ').map(n => n[0]).join('')}
